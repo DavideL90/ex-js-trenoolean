@@ -9,6 +9,10 @@ for (var i = 0; i < 20; i++) {
   }
 }
 console.log(treniContainer);
+var primaPartenza = stampaPrimoTreno(treniContainer);
+document.write("Il treno che parte prima da Roma a Firenze è: "
+               + primaPartenza.id_Treno + " "
+               + primaPartenza.orario);
 //Funzione per creare gli oggetti treni
 function creaTrenoDaRoma(){
   //genero numero identificativo
@@ -27,7 +31,12 @@ function creaTrenoDaRoma(){
   var oraPartenza = "";
   //genero ora e minuti random
   var randomOra = Math.floor(Math.random()* (20 - 6 + 1)) + 6;
-  oraPartenza += randomOra;
+  if(randomOra < 10){
+    oraPartenza += "0" + randomOra;
+  }
+  else{
+    oraPartenza += randomOra;
+  }
   var randomMinuti = Math.floor(Math.random()* 60);
   if(randomMinuti < 10){
     oraPartenza += ":" + "0" + randomMinuti;
@@ -41,7 +50,6 @@ function creaTrenoDaRoma(){
   treno.postiLiberi = postiLiberi;
   return treno;
 }
-
 function creaTrenoDaMilano(){
   //genero numero identificativo
   var treno = {};
@@ -72,4 +80,49 @@ function creaTrenoDaMilano(){
   var postiLiberi = Math.floor(Math.random() * 301);
   treno.postiLiberi = postiLiberi;
   return treno;
+}
+
+//funzione per stampare i treni secondo il punto B
+function stampaPrimoTreno(arrTreni){
+  //Separo le ore dai minuti
+  var oraConversion = arrTreni[0].orarioPartenza.split(":");
+  //converto le ore e i minuti in numeri interi
+  var minOra = parseInt(oraConversion[0]);
+  var minMinuti = parseInt(oraConversion[1]);
+  var numTreno = arrTreni[0].id_Number;
+  var orario = "";
+  console.log(oraConversion);
+  //Ci interessa solo la prima metà dell'array
+  for (var i = 1; i < (arrTreni.length / 2); i++) {
+    oraConversion = arrTreni[i].orarioPartenza.split(":");
+    console.log(oraConversion);
+    var oraConvertita = parseInt(oraConversion[0]);
+    var minutiConvertiti = parseInt(oraConversion[1]);
+    if(oraConvertita < minOra){
+      minOra = oraConvertita;
+      minMinuti = minutiConvertiti;
+      numTreno = arrTreni[i].id_Number;
+    }
+    else if(oraConvertita == minOra) {
+      if(minutiConvertiti < minMinuti){
+        minMinuti = minutiConvertiti;
+        numTreno = arrTreni[i].id_Number;
+      }
+    }
+  }
+  var primoTreno = {};
+  primoTreno.id_Treno = numTreno;
+  if(minOra < 10){
+    orario = "0" + minOra;
+  }else{
+    orario = minOra;
+  }
+  if(minMinuti < 10){
+    orario += ":" + "0" + minMinuti;
+  }
+  else{
+    orario += ":" + minMinuti;
+  }
+  primoTreno.orario = orario;
+  return primoTreno;
 }
