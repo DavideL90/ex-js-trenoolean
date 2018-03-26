@@ -9,9 +9,9 @@ for (var i = 0; i < 20; i++) {
   }
 }
 console.log(treniContainer);
-var primaPartenza = stampaPrimoTreno(treniContainer);
-var trenoVeloce = stampaTrenoVeloce(treniContainer);
-var trenoLibero = stampaTrenoVuoto(treniContainer);
+var primaPartenza = stampaPrimoTrenoDaRoma(treniContainer);
+var trenoVeloce = stampaTrenoVeloceDaRoma(treniContainer);
+var trenoLibero = stampaTrenoVuotoDaRoma(treniContainer);
 document.write("Il treno che parte prima da Roma a Firenze è il numero: "
                + primaPartenza.id_Treno + " che parte alle ore: "
                + primaPartenza.orario + "<br>");
@@ -21,6 +21,32 @@ document.write("Il treno che impiega il minor tempo possibile da Roma a Firenze 
 document.write("Il treno con più posti liberi da Roma a Firenze è il numero: "
               + trenoLibero.numTreno + " che ha "
               + trenoLibero.postiVuoti + " posti liberi" + "<br>");
+//Faccio immettere i dati dall'utente
+var partenzaInput = prompt("Scegli la stazione di partenza tra Roma e Milano:");
+do{
+  var isCorrect = false;
+  if((partenzaInput == "Roma") || (partenzaInput == "Milano")){
+    isCorrect = true;
+  }
+  else{
+    alert("Hai inserito una stazione errata o inesistente! Reinserisci il valore");
+    partenzaInput = prompt("Scegli la stazione di partenza tra Roma e Milano:");
+  }
+} while(!isCorrect);
+
+var metodoRicerca = parseInt(prompt("Seleziona il metodo in base al quale vuoi ricercare i treni: "
+                           + "Scrivi 1 per trovare il treno che parte prima. 2 per quello che viaggia più veloce. 3 per quello con il numero maggiore di posti liberi"));
+do{
+  var isCorrect = false;
+  if((isNaN(metodoRicerca)) || (metodoRicerca < 1) || (metodoRicerca > 3)){
+    alert("Hai inserito un valore Errato! Reinseriscilo");
+    metodoRicerca = parseInt(prompt("Scrivi 1 per trovare il treno che parte prima. 2 per quello che viaggia più veloce. 3 per quello con il numero maggiore di posti liberi"));
+  }
+  else{
+    isCorrect = true;
+  }
+}while(!isCorrect);
+console.log(metodoRicerca);
 //Funzione per creare gli oggetti treni
 function creaTrenoDaRoma(){
   //genero numero identificativo
@@ -90,7 +116,7 @@ function creaTrenoDaMilano(){
   return treno;
 }
 //funzione per stampare i treni secondo il punto B
-function stampaPrimoTreno(arrTreni){
+function stampaPrimoTrenoDaRoma(arrTreni){
   //Separo le ore dai minuti
   var oraConversion = arrTreni[0].orarioPartenza.split(":");
   //converto le ore e i minuti in numeri interi
@@ -134,7 +160,7 @@ function stampaPrimoTreno(arrTreni){
   return primoTreno;
 }
 // funzione per stampare il treno più rapido
-function stampaTrenoVeloce(arrTreni){
+function stampaTrenoVeloceDaRoma(arrTreni){
   var minDurata = arrTreni[0].durata;
   var numTreno = arrTreni[0].id_Number;
   for (var i = 1; i < (arrTreni.length / 2); i++) {
@@ -149,7 +175,7 @@ function stampaTrenoVeloce(arrTreni){
   return fastTrain;
 }
 //funzione per stampare il treno con più posti liberi
-function stampaTrenoVuoto(arrTreni){
+function stampaTrenoVuotoDaRoma(arrTreni){
   var postiVuoti = arrTreni[0].postiLiberi;
   var numTreno = arrTreni[0].id_Number;
   for (var i = 1; i < (arrTreni.length / 2); i++) {
