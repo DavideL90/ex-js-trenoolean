@@ -10,9 +10,17 @@ for (var i = 0; i < 20; i++) {
 }
 console.log(treniContainer);
 var primaPartenza = stampaPrimoTreno(treniContainer);
-document.write("Il treno che parte prima da Roma a Firenze è: "
-               + primaPartenza.id_Treno + " "
-               + primaPartenza.orario);
+var trenoVeloce = stampaTrenoVeloce(treniContainer);
+var trenoLibero = stampaTrenoVuoto(treniContainer);
+document.write("Il treno che parte prima da Roma a Firenze è il numero: "
+               + primaPartenza.id_Treno + " che parte alle ore: "
+               + primaPartenza.orario + "<br>");
+document.write("Il treno che impiega il minor tempo possibile da Roma a Firenze è il numero: "
+               + trenoVeloce.numTreno + " che impiega "
+               + trenoVeloce.minDurata + " minuti" + "<br>");
+document.write("Il treno con più posti liberi da Roma a Firenze è il numero: "
+              + trenoLibero.numTreno + " che ha "
+              + trenoLibero.postiVuoti + " posti liberi" + "<br>");
 //Funzione per creare gli oggetti treni
 function creaTrenoDaRoma(){
   //genero numero identificativo
@@ -81,7 +89,6 @@ function creaTrenoDaMilano(){
   treno.postiLiberi = postiLiberi;
   return treno;
 }
-
 //funzione per stampare i treni secondo il punto B
 function stampaPrimoTreno(arrTreni){
   //Separo le ore dai minuti
@@ -125,4 +132,34 @@ function stampaPrimoTreno(arrTreni){
   }
   primoTreno.orario = orario;
   return primoTreno;
+}
+// funzione per stampare il treno più rapido
+function stampaTrenoVeloce(arrTreni){
+  var minDurata = arrTreni[0].durata;
+  var numTreno = arrTreni[0].id_Number;
+  for (var i = 1; i < (arrTreni.length / 2); i++) {
+    if(arrTreni[i].durata < minDurata){
+      minDurata = arrTreni[i].durata;
+      numTreno = arrTreni[i].id_Number;
+    }
+  }
+  var fastTrain = {};
+  fastTrain.numTreno = numTreno;
+  fastTrain.minDurata = minDurata;
+  return fastTrain;
+}
+//funzione per stampare il treno con più posti liberi
+function stampaTrenoVuoto(arrTreni){
+  var postiVuoti = arrTreni[0].postiLiberi;
+  var numTreno = arrTreni[0].id_Number;
+  for (var i = 1; i < (arrTreni.length / 2); i++) {
+    if(arrTreni[i].postiLiberi > postiVuoti){
+      postiVuoti = arrTreni[i].postiLiberi;
+      numTreno = arrTreni[i].id_Number;
+    }
+  }
+  var trenoVuoto = {};
+  trenoVuoto.numTreno = numTreno;
+  trenoVuoto.postiVuoti = postiVuoti;
+  return trenoVuoto;
 }
