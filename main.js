@@ -54,18 +54,71 @@ switch(metodoRicerca){
   document.write("Il treno che parte prima da: " + partenzaInput +" è il numero: "
                  + responso.id_Treno + " che parte alle ore: "
                  + responso.orario + "<br>");
+  var postiPrenotati = parseInt(prompt("Per quante persone vuoi prenotare?"));
+  if(postiPrenotati > responso.postiRimasti){
+    alert("Ci dispiace ma non ci sono abbastanza posti liberi!");
+  }
+  else{
+    for (var i = 0; i < treniContainer.length; i++) {
+      if((treniContainer[i].id_Number == responso.id_Treno) &&
+         (treniContainer[i].orarioPartenza == responso.orario)){
+           debugger;
+        var postiDiminuiti = treniContainer[i].postiLiberi - postiPrenotati;
+        treniContainer[i].postiLiberi = postiDiminuiti;
+        var codicePrenotazione = generaCodice();
+        document.write("Il codice della sua prenotazione è: " + codicePrenotazione);
+      }
+    }
+  }
   break;
   case 2:
   var responso = cercaTrenoVeloce(partenzaInput, treniContainer);
   document.write("Il treno che impiega il minor tempo possibile da " + partenzaInput + " è il numero: "
                  + responso.numTreno + " che impiega "
                  + responso.minDurata + " minuti" + "<br>");
+  var postiPrenotati = parseInt(prompt("Per quante persone vuoi prenotare?"));
+  if(postiPrenotati > responso.postiRimasti){
+    alert("Ci dispiace ma non ci sono abbastanza posti liberi!");
+  }
+  else{
+    for (var i = 0; i < treniContainer.length; i++) {
+      if((treniContainer[i].id_Number == responso.numTreno) &&
+         (treniContainer[i].durata == responso.minDurata)){
+        var postiDiminuiti = treniContainer[i].postiLiberi - postiPrenotati;
+        treniContainer[i].postiLiberi = postiDiminuiti;
+        var codicePrenotazione = generaCodice();
+        document.write("Il codice della sua prenotazione è: " + codicePrenotazione);
+      }
+    }
+  }
   break;
   case 3:
   var responso = cercaTrenoVuoto(partenzaInput, treniContainer);
+  console.log(responso);
   document.write("Il treno con più posti liberi da " + partenzaInput + " è il numero: "
                 + responso.numTreno + " che ha "
                 + responso.postiVuoti + " posti liberi" + "<br>");
+  var postiPrenotati = parseInt(prompt("Per quante persone vuoi prenotare?"));
+  if(postiPrenotati > responso.postiRimasti){
+    alert("Ci dispiace ma non ci sono abbastanza posti liberi!");
+  }
+  else{
+    for (var i = 0; i < treniContainer.length; i++) {
+      if((treniContainer[i].id_Number == responso.numTreno) &&
+         (treniContainer[i].postiLiberi == responso.numPosti)){
+        console.log(treniContainer[i].postiLiberi);
+        var postiDiminuiti = treniContainer[i].postiLiberi - postiPrenotati;
+        console.log(postiDiminuiti);
+        treniContainer[i].postiLiberi = postiDiminuiti;
+        console.log(treniContainer[i]);
+        var codicePrenotazione = generaCodice();
+        document.write("Il codice della sua prenotazione è: " + codicePrenotazione);
+      }
+    }
+  }
+  break;
+  default :
+  break;
 }
 //Funzione per creare gli oggetti treni
 function creaTrenoDaRoma(){
@@ -141,6 +194,7 @@ function cercaPrimoTreno(stz_Partenza, arrTreni){
   var numTreno;
   var minOra;
   var minMinuti;
+  var postiRimasti;
   do{
     count++
     var oraConversion = arrTreni[count].orarioPartenza.split(":");
@@ -148,11 +202,12 @@ function cercaPrimoTreno(stz_Partenza, arrTreni){
     minOra = parseInt(oraConversion[0]);
     minMinuti = parseInt(oraConversion[1]);
     numTreno = arrTreni[count].id_Number;
+    postiRimasti = arrTreni[count].postiLiberi;
   }while((stz_Partenza != arrTreni[count].staz_Partenza) && (count != arrTreni.length))
   //Separo le ore dai minuti
   var orario = "";
   for (var i = 0; i < (arrTreni.length); i++) {
-    if(arrTreni[i].staz_Partenza == stz_Partenza){
+    if((arrTreni[i].staz_Partenza == stz_Partenza) && (arrTreni[i].postiLiberi != 0)){
       var oraConversion = arrTreni[i].orarioPartenza.split(":");
       var oraConvertita = parseInt(oraConversion[0]);
       var minutiConvertiti = parseInt(oraConversion[1]);
@@ -160,11 +215,13 @@ function cercaPrimoTreno(stz_Partenza, arrTreni){
         minOra = oraConvertita;
         minMinuti = minutiConvertiti;
         numTreno = arrTreni[i].id_Number;
+        postiRimasti = arrTreni[i].postiLiberi;
       }
       else if(oraConvertita == minOra) {
         if(minutiConvertiti < minMinuti){
           minMinuti = minutiConvertiti;
           numTreno = arrTreni[i].id_Number;
+          postiRimasti = arrTreni[i].postiLiberi;
         }
       }
     }
@@ -183,12 +240,15 @@ function cercaPrimoTreno(stz_Partenza, arrTreni){
     orario += ":" + minMinuti;
   }
   primoTreno.orario = orario;
+  primoTreno.numPosti = postiRimasti;
   return primoTreno;
 }
+//funzione per cercare il treno che ci mette meno
 function cercaTrenoVeloce(stz_Partenza, arrTreni){
   var count = -1;
   var minDurata;
   var numTreno;
+  var postiRimasti;
   do{
     count++
     minDurata = arrTreni[count].durata;
@@ -196,39 +256,55 @@ function cercaTrenoVeloce(stz_Partenza, arrTreni){
   }while((stz_Partenza != arrTreni[count].staz_Partenza) && (count != arrTreni.length))
 
   for (var i = 1; i < (arrTreni.length); i++) {
-    if(arrTreni[i].staz_Partenza == stz_Partenza){
+    if((arrTreni[i].staz_Partenza == stz_Partenza) && (arrTreni[i].postiLiberi != 0)){
       if(arrTreni[i].durata < minDurata){
         minDurata = arrTreni[i].durata;
         numTreno = arrTreni[i].id_Number;
+        postiRimasti = arrTreni[i].postiLiberi;
       }
     }
   }
   var fastTrain = {};
   fastTrain.numTreno = numTreno;
   fastTrain.minDurata = minDurata;
+  fastTrain.numPosti = postiRimasti;
   return fastTrain;
 }
 //funzione per stampare il treno con più posti liberi
 function cercaTrenoVuoto(stz_Partenza, arrTreni){
   var count = -1;
-  var postiVuoti;
+  var postiRimasti;
   var numTreno;
   do{
     count++
-    postiVuoti = arrTreni[count].postiLiberi;
+    postiRimasti = arrTreni[count].postiLiberi;
     numTreno = arrTreni[count].id_Number;
   }while((stz_Partenza != arrTreni[count].staz_Partenza) && (count != arrTreni.length))
 
   for (var i = 1; i < (arrTreni.length); i++) {
     if(arrTreni[i].staz_Partenza == stz_Partenza){
-      if(arrTreni[i].postiLiberi > postiVuoti){
-        postiVuoti = arrTreni[i].postiLiberi;
+      if(arrTreni[i].postiLiberi > postiRimasti){
+        postiRimasti = arrTreni[i].postiLiberi;
         numTreno = arrTreni[i].id_Number;
       }
     }
   }
   var trenoVuoto = {};
   trenoVuoto.numTreno = numTreno;
-  trenoVuoto.postiVuoti = postiVuoti;
+  trenoVuoto.numPosti = postiRimasti;
   return trenoVuoto;
+}
+//funzione per generare il codice alfanumerico
+function generaCodice(){
+  var codice = "";
+  for (var i = 0; i < 2; i++) {
+    var letterNumber = Math.floor(Math.random()*(90 - 64 + 1)) + 64;
+    var letter = String.fromCharCode(letterNumber);
+    codice += letter;
+  }
+  for(var i = 0; i < 4; i++){
+    var randomNumber = Math.floor(Math.random()* 10);
+    codice += randomNumber;
+  }
+  return codice;
 }
