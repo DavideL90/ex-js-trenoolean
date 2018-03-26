@@ -10,8 +10,8 @@ for (var i = 0; i < 20; i++) {
 }
 console.log(treniContainer);
 var primaPartenza = cercaPrimoTreno("Roma", treniContainer);
-var trenoVeloce = stampaTrenoVeloceDaRoma(treniContainer);
-var trenoLibero = stampaTrenoVuotoDaRoma(treniContainer);
+var trenoVeloce = cercaTrenoVeloce("Roma", treniContainer);
+var trenoLibero = cercaTrenoVuoto("Roma" , treniContainer);
 document.write("Il treno che parte prima da Roma a Firenze è il numero: "
                + primaPartenza.id_Treno + " che parte alle ore: "
                + primaPartenza.orario + "<br>");
@@ -51,7 +51,21 @@ do{
 switch(metodoRicerca){
   case 1:
   var responso = cercaPrimoTreno(partenzaInput, treniContainer);
-  console.log(responso);
+  document.write("Il treno che parte prima da: " + partenzaInput +" è il numero: "
+                 + responso.id_Treno + " che parte alle ore: "
+                 + responso.orario + "<br>");
+  break;
+  case 2:
+  var responso = cercaTrenoVeloce(partenzaInput, treniContainer);
+  document.write("Il treno che impiega il minor tempo possibile da " + partenzaInput + " è il numero: "
+                 + responso.numTreno + " che impiega "
+                 + responso.minDurata + " minuti" + "<br>");
+  break;
+  case 3:
+  var responso = cercaTrenoVuoto(partenzaInput, treniContainer);
+  document.write("Il treno con più posti liberi da " + partenzaInput + " è il numero: "
+                + responso.numTreno + " che ha "
+                + responso.postiVuoti + " posti liberi" + "<br>");
 }
 //Funzione per creare gli oggetti treni
 function creaTrenoDaRoma(){
@@ -135,9 +149,6 @@ function cercaPrimoTreno(stz_Partenza, arrTreni){
     minMinuti = parseInt(oraConversion[1]);
     numTreno = arrTreni[count].id_Number;
   }while((stz_Partenza != arrTreni[count].staz_Partenza) && (count != arrTreni.length))
-  console.log(minOra);
-  console.log(minMinuti);
-  console.log(numTreno);
   //Separo le ore dai minuti
   var orario = "";
   for (var i = 0; i < (arrTreni.length); i++) {
@@ -158,9 +169,6 @@ function cercaPrimoTreno(stz_Partenza, arrTreni){
       }
     }
   }
-  console.log(minOra);
-  console.log(minMinuti);
-  console.log(numTreno);
   var primoTreno = {};
   primoTreno.id_Treno = numTreno;
   if(minOra < 10){
@@ -177,58 +185,22 @@ function cercaPrimoTreno(stz_Partenza, arrTreni){
   primoTreno.orario = orario;
   return primoTreno;
 }
-//funzione per stampare i treni
-// function stampaPrimoTrenoDaRoma(arrTreni){
-//   //Separo le ore dai minuti
-//   var oraConversion = arrTreni[0].orarioPartenza.split(":");
-//   //converto le ore e i minuti in numeri interi
-//   var minOra = parseInt(oraConversion[0]);
-//   var minMinuti = parseInt(oraConversion[1]);
-//   var numTreno = arrTreni[0].id_Number;
-//   var orario = "";
-//   console.log(oraConversion);
-//   //Ci interessa solo la prima metà dell'array
-//   for (var i = 1; i < (arrTreni.length / 2); i++) {
-//     oraConversion = arrTreni[i].orarioPartenza.split(":");
-//     console.log(oraConversion);
-//     var oraConvertita = parseInt(oraConversion[0]);
-//     var minutiConvertiti = parseInt(oraConversion[1]);
-//     if(oraConvertita < minOra){
-//       minOra = oraConvertita;
-//       minMinuti = minutiConvertiti;
-//       numTreno = arrTreni[i].id_Number;
-//     }
-//     else if(oraConvertita == minOra) {
-//       if(minutiConvertiti < minMinuti){
-//         minMinuti = minutiConvertiti;
-//         numTreno = arrTreni[i].id_Number;
-//       }
-//     }
-//   }
-//   var primoTreno = {};
-//   primoTreno.id_Treno = numTreno;
-//   if(minOra < 10){
-//     orario = "0" + minOra;
-//   }else{
-//     orario = minOra;
-//   }
-//   if(minMinuti < 10){
-//     orario += ":" + "0" + minMinuti;
-//   }
-//   else{
-//     orario += ":" + minMinuti;
-//   }
-//   primoTreno.orario = orario;
-//   return primoTreno;
-// }
-// funzione per stampare il treno più rapido
-function stampaTrenoVeloceDaRoma(arrTreni){
-  var minDurata = arrTreni[0].durata;
-  var numTreno = arrTreni[0].id_Number;
-  for (var i = 1; i < (arrTreni.length / 2); i++) {
-    if(arrTreni[i].durata < minDurata){
-      minDurata = arrTreni[i].durata;
-      numTreno = arrTreni[i].id_Number;
+function cercaTrenoVeloce(stz_Partenza, arrTreni){
+  var count = -1;
+  var minDurata;
+  var numTreno;
+  do{
+    count++
+    minDurata = arrTreni[count].durata;
+    numTreno = arrTreni[count].id_Number;
+  }while((stz_Partenza != arrTreni[count].staz_Partenza) && (count != arrTreni.length))
+
+  for (var i = 1; i < (arrTreni.length); i++) {
+    if(arrTreni[i].staz_Partenza == stz_Partenza){
+      if(arrTreni[i].durata < minDurata){
+        minDurata = arrTreni[i].durata;
+        numTreno = arrTreni[i].id_Number;
+      }
     }
   }
   var fastTrain = {};
@@ -237,13 +209,22 @@ function stampaTrenoVeloceDaRoma(arrTreni){
   return fastTrain;
 }
 //funzione per stampare il treno con più posti liberi
-function stampaTrenoVuotoDaRoma(arrTreni){
-  var postiVuoti = arrTreni[0].postiLiberi;
-  var numTreno = arrTreni[0].id_Number;
-  for (var i = 1; i < (arrTreni.length / 2); i++) {
-    if(arrTreni[i].postiLiberi > postiVuoti){
-      postiVuoti = arrTreni[i].postiLiberi;
-      numTreno = arrTreni[i].id_Number;
+function cercaTrenoVuoto(stz_Partenza, arrTreni){
+  var count = -1;
+  var postiVuoti;
+  var numTreno;
+  do{
+    count++
+    postiVuoti = arrTreni[count].postiLiberi;
+    numTreno = arrTreni[count].id_Number;
+  }while((stz_Partenza != arrTreni[count].staz_Partenza) && (count != arrTreni.length))
+
+  for (var i = 1; i < (arrTreni.length); i++) {
+    if(arrTreni[i].staz_Partenza == stz_Partenza){
+      if(arrTreni[i].postiLiberi > postiVuoti){
+        postiVuoti = arrTreni[i].postiLiberi;
+        numTreno = arrTreni[i].id_Number;
+      }
     }
   }
   var trenoVuoto = {};
